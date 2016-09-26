@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>HTML Page</title>
+    </head>
+    <body>
+    <header id="headerItem">
+        Header to be modified
+    </header>
+    <section>
+        <button onclick="testJavascript()">Testing Javascript</button>
+    </section>
+    <script type="text/javascript">
+        function testJavascript() {
+           var newHtml = '<em>Dynamically Html</em>';
+           document.getElementById('headerItem').innerHTML = newHtml;
+        }
+    </script>
+</body>
+</html>
