@@ -64,8 +64,19 @@ else{
  //Runs only if **a** and **b** is false;
 }
 ```
+### TERNARY OPERATOR "?"
 
-SWITCH
+Ternary operator "?" is structured in this way: \<COMPARISON> **?** \<RETURN IF TRUE> **:** \<RETURN IF FALSE>
+
+```javascript
+
+function testeValue(value){
+    return value >= 5 ? "Big" : "Small"; // (value >= 5) is <COMPARISON>,"Big" is <RETURN IF TRUE>, "Small" is <RETURN IF FALSE>
+}
+```
+If value is 5 or greater, this function will return the string "Big". Otherwise, it will return "Small".
+
+### SWITCH
 
 Switch is a operator that has a block definition that receives a value, and one or more "case" statements within this block.
 
