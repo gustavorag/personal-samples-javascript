@@ -25,3 +25,16 @@ Example
   }
 )("This is the Param A"); //Here I close the block that contains all the function definition and call the function immediately after.
 ```
+
+!NOTE: You can **NOT** call this function later unless you "save" its definition on a variable:
+
+```javascript
+var fooFunc ;
+(
+ fooFunc = function foo(paramA){
+    console.log('Printing the param A: '+paramA) ;
+  }
+)("This is the Param A");
+
+fooFunc("Late invocation");
+```
