@@ -26,7 +26,7 @@ Example
 )("This is the Param A"); //Here I close the block that contains all the function definition and call the function immediately after.
 ```
 
-!NOTE: You can **NOT** call this function later unless you "save" its definition on a variable:
+![alt logo](../imgs/warning-icon-16.png "Warning") NOTE: You can **NOT** call this function later unless you "save" its definition on a variable:
 
 ```javascript
 var fooFunc ;
