@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>HTML Page</title>
+        
+    </head>
+    <body>
+      <button id='button2' onclick='getElementById("target").innerHTML ="bar: Now is "+Date()'>Directily on HTML</button><br><br>
+      <button id='button2' onclick='getTime()'>Call onClick function</button>
+      <button id='button3'>Call event handled</button>
+      <button id='button4'>Call javascript anonymous function</button>
+
+      <p>foo: What time is it?</p>
+      <p id="target"></p>
+	
+    </body>
+
+    <script type="text/javascript">
+    	
+    	function getTime(){
+    		document.getElementById("target").innerHTML ="bar: Let me see.... Oh, right is "+Date();
+    	}
+
+    	function clickHandler(){
+    		document.getElementById("target").innerHTML ="bar: Event says that is "+Date();
+    	}
+		
+      //Add event handle directily on the element
+      //We can add in this way :
+       document.getElementById('button3').addEventListener('click', clickHandler);
+      
+      //Or with a anonymous function:
+      document.getElementById('button4').addEventListener('click', function(){
+	      document.getElementById("target").innerHTML ="bar: Let me ask to the Anonymous function. What time is it anonymous?<br>Anonymous: Now, is "+Date();
+      });
+
+    </script>
+
+    
+</html>
