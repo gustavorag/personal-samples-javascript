@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>HTML Page</title>
+        
+    </head>
+    <body>
+      <div id="divOne">
+        <div id="divTwo">
+          <button  id='divThree'>Bubbled</button>
+        </div>
+      </div>
+      <br>
+      <div id="divFour">
+        <div id="divFive">
+          <div style="background-color: blue; border-style: solid; width: 120px;" id='divSix'>Not Bubbled</div>
+        </div>
+      </div>
+
+      <p>foo: What time is it?</p>
+      <p id="target"></p>
+	
+    </body>
+
+    <script type="text/javascript">
+    	
+      function bubbledTest(event){
+        
+        console.log(this.id+" says: Hello!! I was trigged by "+event.target.id+" ;D");
+      }
+
+      function otherBubbled(event){
+        
+        console.log(this.id+" says: Hello, I'm other Bubbled!! I was trigged by "+event.target.id+" ;D");
+      }
+
+      var buttons = document.getElementsByTagName('button');
+
+      for(var index = 0; index < buttons.length; index++){
+        buttons[index].onclick = bubbledTest;
+      }
+
+      document.getElementById('divOne').onclick = bubbledTest;
+      document.getElementById('divTwo').onclick = otherBubbled;
+      document.getElementById('divThree').onclick = bubbledTest;
+      document.getElementById('divSix').onclick = bubbledTest;
+      
+
+      //Explanation: When one element has a event trigged and has a handler for this event, and your parents has handler for same event,
+      //then the handler of the parants will be executed too, at least if you do not use a breaker for the event: event.stopPropagation();
+      //Therefore, when you click on "divThree" element, the function "bubbledTest" will executed 2 times(the parente 'divOne' has this
+      //function as handler for "onclick") and the function "otherBubbled" will be executed 1 time (the parente 'divTwo' has this
+      //function as handler for "onclick"). The propagation occurs only if the parents has handler for same event trigged. If you click
+      //on 'divSix', only one function will be executed.
+
+    </script>
+
+    
+</html>
