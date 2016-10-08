@@ -51,5 +51,23 @@ Console output:
 > Multiply Five (5): 25
 ```
 
+Another form of use clousured functions is:
+
+```javascript
+function multiply(multiplier){
+   var sum = 0;
+   return function(factor){
+       for(var i = 0; i < multiplier; i++){
+         	sum += factor;
+       }
+       return sum;
+    }
+}
+
+console.log(multiply(2)(2)) // 2 times 2
+console.log(multiply(2)(4)) // 2 times 4
+
+```
+
 
 
