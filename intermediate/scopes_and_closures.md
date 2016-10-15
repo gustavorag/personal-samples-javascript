@@ -106,7 +106,7 @@ Using **"Hoisting"** is not a good practice due it could make the code hard to b
 ###LET DECLARATION
 
 The **"let"** declaration is a new (ES6) alternative for use instead **"var"** keyword. Differently from **"var"**,
-**"let"** will create a variable if a limited scope:
+**"let"** will create a variable with a limited scope:
 
 ```javascript
 
