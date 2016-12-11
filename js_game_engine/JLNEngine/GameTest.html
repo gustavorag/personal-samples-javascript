@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Example Page</title>
+		<script src="/JLNEngine/JLNGame.js"></script>
+	</head>
+	<body>
+
+
+		<script type="text/javascript">
+
+			//function GameHandler(screenWidth, screenHeight, updateGame, frameRate){ //FrameRate should be fixed?
+
+			var updateThisGame = function(){
+
+			}
+			var gameHandler = $JLN.createGameHandler(500, 400, updateThisGame, 60);
+			var mySprite = gameHandler.createNewGraphicalObject("/images/ball.png", true, true, function(){
+				
+				//Check for top and down
+				if($JLN.keyboardUtil.isKeyDown(87)){ //UP (W)
+					mySprite.velocity.vX = -4;
+				}
+				else if($JLN.keyboardUtil.isKeyDown(83)){ //DOWN (S)
+					mySprite.velocity.vX = 4;
+				}
+				else{
+					mySprite.velocity.vX = 0;
+				}
+				
+				//Check for left and right
+				if($JLN.keyboardUtil.isKeyDown(65)){ //LEFT (A)
+					mySprite.velocity.vY = -4;
+				}
+				else if($JLN.keyboardUtil.isKeyDown(68)){ //RIGHT (D)
+					mySprite.velocity.vY = 4;
+				}
+				else{
+					mySprite.velocity.vY = 0;
+				}
+
+			});
+			gameHandler.addGraphicalObjects(mySprite);
+			gameHandler.start();
+			
+
+		</script>
+
+	</body>
+</html>
