@@ -7,29 +7,29 @@
 		"NLItemsList": function(config){
 
 			/*Constants*/
-			var CLASS_INPUT_LIST = "lnil-comp";
-			var CLASS_INPUT_LIST_INP_RDY = "lnil-comp-permanent-input";
-			var CLASS_INPUT_NEW_ID="lnil-input";
-			var CLASS_INPUT_LIST_INP_RDY_INPUT = "lnil-input-permanent-input"
-			var CLASS_INPUT_LIST_HANDLER = "lnil-click-handler";
-			var CLASS_INPUT_LIST_ITEM="lnil-item"
-			var CLASS_INPUT_LIST_REMOVE="lnil-item-remover"
+			var CLASS_LNIL_COMP = "lnil-comp";
+			var CLASS_LNIL_COMP_PERMANENT_INPUT = "lnil-comp-permanent-input";
+			var CLASS_INPUT="lnil-input";
+			var CLASS_INPUT_HIDDEN = "lnil-input-hidden";
+			var CLASS_INPUT_EDIT = "lnil-input-edit";
+			var CLASS_LNIL_ITEM="lnil-item"
+			var CLASS_LNIL_ITEM_REMOVER="lnil-item-remover"
 
-			var ID_CLICK_HANDLER = "-click-handler-id";
 			var ID_INPUT = "-input-new-item-id";
 			var ID_INPUT_EDIT = "-input-edit-item-id";
-			var ID_INPUT_LIST_PREFIX = "-item-id-";
-			var ID_INPUT_LIST_REMOVE_PREFIX = "-item-remove-id-";
+			var ID_LIST_ITEM = "-item-id-";
+			var ID_REMOVE_POSFIX = "-remove";
 
 			var inputListSize = 600; //Default value
-			var paddingFix = 0;
-			var permanentInputMinSize = 150;
+			var paddingFix = 10;
+			var inputMinSize = 150;
+			var hiddenInputMinSize = 20;
+			var editItemPaddingFix = 10;
 			var itemsListElementId = undefined;
-			var inputsList = [];
+			var itemsList = [];
+			var itemsHtmlIdCounter = 0;
 			var lnilConfig;
 
-			var actualLineSize = 0;
-			
 			var eventHandlers = {
 				additem:undefined,
 				removeitem:undefined,
@@ -38,21 +38,21 @@
 			
 			var getItems = function(){
 				var itemsToReturn = [];
-				inputsList.forEach(function(lnilItem,index){
+				itemsList.forEach(function(lnilItem,index){
 					itemsToReturn.push(lnilItem.item);
 				})
 				return itemsToReturn;
 			};
 			var getKeys = function(){
 				var itemsToReturn = [];
-				inputsList.forEach(function(lnilItem,index){
+				itemsList.forEach(function(lnilItem,index){
 					itemsToReturn.push(lnilItem.item.key);
 				})
 				return itemsToReturn;
 			};
 			var getValues = function(){
 				var itemsToReturn = [];
-				inputsList.forEach(function(lnilItem,index){
+				itemsList.forEach(function(lnilItem,index){
 					itemsToReturn.push(lnilItem.item.value);
 				})
 				return itemsToReturn;
@@ -65,8 +65,10 @@
 					width: size in pixels of the input list
 					editButton
 					permanentInput: true or false
+					addOnFocusout: true ou false (default:false)
 				}
 				keyGenerator: function to generate keys for the values
+				valueValidator: funtion to return true or false after validate de value for the item.
 			}
 			*/
 			var newItemsList = function(config){
@@ -74,13 +76,9 @@
 				lnilConfig = config;
 				if(lnilConfig && lnilConfig.target){
 
-					paddingFix = (lnilConfig.options.permanentInput ? 15:30);
-
-					ID_CLICK_HANDLER = lnilConfig.target+ID_CLICK_HANDLER;
 					ID_INPUT = lnilConfig.target+ID_INPUT;
 					ID_INPUT_EDIT = lnilConfig.target+ID_INPUT_EDIT;
-					ID_INPUT_LIST_PREFIX = lnilConfig.target+ID_INPUT_LIST_PREFIX;
-					ID_INPUT_LIST_REMOVE_PREFIX = lnilConfig.target+ID_INPUT_LIST_REMOVE_PREFIX;
+					ID_LIST_ITEM = lnilConfig.target+ID_LIST_ITEM;
 
 					var newItemsListApi ={
 						on:function(event, callbackFunction){
@@ -109,33 +107,24 @@
 
 					itemsListElement.css('width', inputListSize);
 					if(lnilConfig.options.permanentInput){
-						itemsListElement.addClass(CLASS_INPUT_LIST_INP_RDY);
+						itemsListElement.addClass(CLASS_LNIL_COMP_PERMANENT_INPUT);
 					}else{
-						itemsListElement.addClass(CLASS_INPUT_LIST);
+						itemsListElement.addClass(CLASS_LNIL_COMP);
 					}
-					
-					if(lnilConfig.items){
 
+					addInputElement();
+
+					if(lnilConfig.items){
 						lnilConfig.items.forEach(function(item,index){
 							if(item){
-								setTimeout(function(){
-									if(typeof item === "object"){
-										addNewItem(item.key, item.value, true)
-									}
-									if(typeof item === "string"){
-										addNewItem('', item, true)
-									}
-								}, 10);	
+								if(typeof item === "object"){
+									addNewItem(item.key, item.value)
+								}
+								if(typeof item === "string"){
+									addNewItem('', item)
+								}	
 							}
 						})
-						if(lnilConfig.options.permanentInput){
-							setTimeout(addInputElement, 10);
-						}else{
-							setTimeout(addClickHandler, 10);
-						}
-						
-					}else{
-						addClickHandler();
 					}
 					
 					return newItemsListApi;
@@ -147,100 +136,97 @@
 			}
 
 
-			var addClickHandler = function(){
-				
-				var itemsListElement = $('#'+itemsListElementId);
-				
-				itemsListElement.append('<div id="'+ID_CLICK_HANDLER
-					+'" class="'+CLASS_INPUT_LIST_HANDLER
-					+'"></div>');
-				
-				var clickHandlerElement = $('#'+ID_CLICK_HANDLER);
-				var nextElementSize = (inputListSize - actualLineSize - paddingFix);
-				if(nextElementSize < 60){
-					clickHandlerElement.css('display','block');
-					clickHandlerElement.css('position','relative');
-				}else{
-					clickHandlerElement.css('display','inline-block');
-					clickHandlerElement.css('position','absolute');
-				}
-				
-				clickHandlerElement.css('width',nextElementSize);
-				clickHandlerElement.on('click',addInputElement);
-			}
-
 			var addInputElement = function(){
 				
-				if(!lnilConfig.options.permanentInput){
-					$('#'+ID_CLICK_HANDLER).remove();
-				}
-
 				var itemsListElement = $('#'+itemsListElementId);
-				
-				itemsListElement.append('<input id='+ID_INPUT
-					+' class="'+(lnilConfig.options.permanentInput ? CLASS_INPUT_LIST_INP_RDY_INPUT : CLASS_INPUT_NEW_ID)
+
+				itemsListElement.append('<input id="'+ID_INPUT
+					+'" class="'+CLASS_INPUT
 					+'" type="text"></input>');
-
+				
 				var inputElement = $('#'+ID_INPUT);
-				resizepermanentInput();
+				resizeInput(ID_INPUT);
 
+				if(!lnilConfig.options.permanentInput){
+					hideInput();
+					inputElement.on('click',showInput);
+				}
+				
 				inputElement.focusout(function(){
-					//alert($('#'+inputId).val());
-					var value = inputElement.val();
-					
-					if(lnilConfig.options.permanentInput){
-						
-						addNewItem('', value, false);
-						//Resize input
-						resizepermanentInput();
-						inputElement.val('');
-
-					}else{
-						inputElement.remove();
-
-						addNewItem('', value, false);
-						addClickHandler();
+					if(lnilConfig.options.addOnFocusout){
+						var value = inputElement.val();
+						addNewItem('', value);
+					}
+					if(!lnilConfig.options.permanentInput){
+						hideInput();
 					}
 					
 				});
+				
 				inputElement.keypress(function (e) {
 				  if (e.which == 13) {
 
 				   	var value = inputElement.val();
-					
-					if(lnilConfig.options.permanentInput){
-						
-						addNewItem('', value, false);
-						resizepermanentInput();
-						inputElement.val('');
-
-					}else{
-						inputElement.remove();
-
-						addNewItem('', value, false);
-						addClickHandler();
+					addNewItem('', value);
+					if(!lnilConfig.options.permanentInput){
+						hideInput();
 					}
 
 				    return false;
 				  }
 				});
-				if(!lnilConfig.options.permanentInput){
-					inputElement.focus();	
-				}
+				
 			}
 
-			var addNewItem = function(key,value,previous){
+			var addItem = function(lnilItem, inputId){
+
+				var buttonRemoveId = lnilItem.htmlId+ID_REMOVE_POSFIX;
+				
+				var stringNewItem = '<div id="'+lnilItem.htmlId
+						+'" class="'+CLASS_LNIL_ITEM+'" value="'+lnilItem.item.value
+						+'">'+lnilItem.item.value
+						+'</div>';
+
+				$(stringNewItem).insertBefore('#'+inputId)
+				
+				var newItemElement = $('#'+lnilItem.htmlId)
+				newItemElement.on('click', function(){
+					handleEditItemEvent(lnilItem.htmlId);
+				})
+
+				newItemElement.append('&nbsp;<button type="button" id="'+buttonRemoveId
+				+'" class="'+CLASS_LNIL_ITEM_REMOVER
+				+'" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
+
+				var buttoRemoveElement = $('#'+buttonRemoveId);
+				buttoRemoveElement.on('click', function(){
+					removeItem(lnilItem.htmlId);
+				})
+				
+				if(eventHandlers.additem && !previous){
+					eventHandlers.additem(lnilItem.item)
+				}
+				if(eventHandlers.listchange && !previous){
+					eventHandlers.listchange(getItems())
+				}
+
+			}
+
+			var addNewItem = function(key,value){
 				
 				if(isStringEmpty(key) && lnilConfig.keyGenerator){
 					key = lnilConfig.keyGenerator(value);
 				}
+				
+				var valid = true;
+				if(lnilConfig.valueValidator){
+					valid = lnilConfig.valueValidator(value);
+				}
 
-				if(value){
+				if(valid){
 
-					var newItemId = ID_INPUT_LIST_PREFIX+(inputsList.length+1);
-					var buttonRemoveId = ID_INPUT_LIST_REMOVE_PREFIX+(inputsList.length+1);
+					var newItemId = ID_LIST_ITEM+(++itemsHtmlIdCounter);
 
-					var itemsListElement = $('#'+itemsListElementId);
 					var lnilItem = {
 						htmlId:newItemId,
 						item:{
@@ -249,62 +235,29 @@
 						},
 					}
 
-					inputsList.push(lnilItem);
+					itemsList.push(lnilItem);
 
-					var stringNewItem = '<div id="'+lnilItem.htmlId
-						+'" class="'+CLASS_INPUT_LIST_ITEM+'" value="'+lnilItem.item.value
-						+'">'+lnilItem.item.value
-						+'</div>';
-
-					if(lnilConfig.options.permanentInput && !previous){
-						$(stringNewItem).insertBefore('#'+ID_INPUT)
-					}else{
-						itemsListElement.append(stringNewItem)
-					}
-
-					var newItemElement = $('#'+lnilItem.htmlId)
-					newItemElement.on('click', function(){
-						handleEditItemEvent(lnilItem.htmlId);
-					})
-
-					newItemElement.append('<button type="button" id="'+buttonRemoveId
-					+'" class="'+CLASS_INPUT_LIST_REMOVE
-					+'" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
-
-					var buttoRemoveElement = $('#'+buttonRemoveId);
-					buttoRemoveElement.on('click', function(){
-						removeItem(lnilItem.htmlId);
-					})
-
-					var totalUse = (actualLineSize + newItemElement.outerWidth())
-					if(totalUse > (inputListSize - paddingFix)){
-						actualLineSize = newItemElement.outerWidth();
-					}else{
-						actualLineSize = totalUse;
-					}
-					
-					if(eventHandlers.additem && !previous){
-						eventHandlers.additem(lnilItem.item)
-					}
-					if(eventHandlers.listchange && !previous){
-						eventHandlers.listchange(getItems())
-					}
+					$('#'+ID_INPUT).val('');
+					addItem(lnilItem, ID_INPUT);
+					resizeInput(ID_INPUT);
 				}
 			}
 
 			var handleEditItemEvent = function(htmlId){
 
-				//Disable ClickHandler or ReadyInput
-				if(!lnilConfig.options.permanentInput){
-					$('#'+ID_CLICK_HANDLER).remove();
-				}else{
-					$('#'+ID_INPUT).remove();
+				//Disable Input
+				if(lnilConfig.options.permanentInput){
+					hideInput();
 				}
 				
+				$('#'+ID_INPUT).hide();
 				var itemToEditElement = $('#'+htmlId);
 
+				
+				var itemSize = itemToEditElement.outerWidth();
+				
 				var inputEditHtml = '<input id='+ID_INPUT_EDIT
-					+' class="'+(lnilConfig.options.permanentInput ? CLASS_INPUT_LIST_INP_RDY_INPUT : CLASS_INPUT_NEW_ID)
+					+' class="'+CLASS_INPUT_EDIT
 					+'" type="text"></input>';
 				
 				var oldValue = itemToEditElement.attr('value');
@@ -315,74 +268,82 @@
 				var inputEditElement = $('#'+ID_INPUT_EDIT);
 
 				inputEditElement.val(oldValue);
+
+				resizeInput(ID_INPUT_EDIT);
+				
 				inputEditElement.focusout(function(){
 					//alert($('#'+inputId).val());
 					var newValue = inputEditElement.val();
 					updateItem(htmlId,newValue);
 					
+					
 				});
+				
 				inputEditElement.keypress(function (e) {
 				  if (e.which == 13) {
 
 				   	var newValue = inputEditElement.val();
 					updateItem(htmlId,newValue);
-
 				    return false;
 				  }
 				});
+
 				inputEditElement.focus();
 				
 			}
 
 			var updateItem = function(htmlId, newValue){
 
-				console.log('New value: '+newValue+" for "+htmlId);
+				var valid = true;
+				if(lnilConfig.valueValidator){
+					valid = lnilConfig.valueValidator(newValue);
+				}
+
+				var updatedLnilItem;
+
+				for(var index = 0; index < itemsList.length; index++){
+					if(itemsList[index].htmlId == htmlId){
+						if(valid){
+							itemsList[index].item.value = newValue;
+						}
+						updatedLnilItem = itemsList[index];
+						break;
+					}
+				}
+
+				
+				addItem(updatedLnilItem, ID_INPUT_EDIT);
+				$('#'+ID_INPUT_EDIT).remove();
+				$('#'+ID_INPUT).show();
+				resizeInput(ID_INPUT);
 
 				if(lnilConfig.options.permanentInput){
-					addInputElement();
-				}else{
-					addClickHandler();
+					showInput();
 				}
+				
 			}
 
 			var removeItem = function(itemId){
 				
 				var itemToRemove = $('#'+itemId);
-				var clickHandlerElement = $('#'+ID_CLICK_HANDLER);
-
-				actualLineSize = (actualLineSize - itemToRemove.outerWidth())
 
 				itemToRemove.remove();
-				clickHandlerElement.remove();
-
-				if(actualLineSize == 0){
-					var itemsListElement = $('#'+itemsListElementId);
-					itemsListElement.find('.'+CLASS_INPUT_LIST_ITEM).each(function(){
-						actualLineSize = actualLineSize+$(this).outerWidth();
-					})
-				}
 
 				var indexToRemove = undefined;
 				var lnilItemToRemove = undefined;
 
-				for(var index = 0; index < inputsList.length; index++){
-					if(inputsList[index].htmlId == itemId){
+				resizeInput(ID_INPUT);
+
+				for(var index = 0; index < itemsList.length; index++){
+					if(itemsList[index].htmlId == itemId){
 						indexToRemove = index;
-						lnilItemToRemove = inputsList[index].item
+						lnilItemToRemove = itemsList[index].item
 						break;
 					}
 				}
 				
 				if(indexToRemove){
-					inputsList.splice(indexToRemove, 1);
-				}
-				
-				if(lnilConfig.options.permanentInput){
-					//Resize input
-					resizepermanentInput();
-
-				}else{
-					addClickHandler();
+					itemsList.splice(indexToRemove, 1);
 				}
 
 				if(eventHandlers.removeitem){
@@ -394,13 +355,55 @@
 
 			}
 
-			var resizepermanentInput = function(){
+			var hideInput = function(){
+
 				var inputElement = $('#'+ID_INPUT);
-				var inputSize = (inputListSize - actualLineSize - paddingFix);
-				if(inputSize < permanentInputMinSize){
+				inputElement.addClass(CLASS_INPUT_HIDDEN);
+			    // inputElement.removeClass(CLASS_INPUT);
+				
+			}
+			var showInput = function(){
+
+				var inputElement = $('#'+ID_INPUT);
+				// inputElement.addClass(CLASS_INPUT);
+				if(inputElement.outerWidth() < inputMinSize){
+					inputSize = (inputListSize - paddingFix);
+					inputElement.css('width',inputSize);
+				}
+			    inputElement.removeClass(CLASS_INPUT_HIDDEN);
+				
+			}
+
+			var resizeInput = function(inputId){
+
+				var lineSize = 0;
+				itemsListElement = $('#'+itemsListElementId);
+				
+				itemsListElement.children().each(function(){
+					//Input elements will not be considerated
+					if($(this).prop("id") == ID_INPUT ||
+						$(this).prop("id") == ID_INPUT_EDIT){
+						console.log('Stoping loop')
+						return false;
+					}
+					console.log('Continuing loop')
+					lineSize = lineSize+$(this).outerWidth();
+					if(lineSize > (inputListSize - paddingFix)){
+						lineSize = $(this).outerWidth();
+					}
+				})
+
+				var inputElement = $('#'+inputId);
+				var inputSize = (inputListSize - lineSize - paddingFix);
+
+				var minSize = lnilConfig.options.permanentInput ? inputMinSize:hiddenInputMinSize;
+
+				if(inputSize < minSize){
 					inputSize = (inputListSize - paddingFix);
 				}
 				inputElement.css('width',inputSize);
+
+				console.log('lineSize: '+lineSize+' -- Inputsize: '+inputSize)
 			}
 
 			var isStringEmpty = function(str){
