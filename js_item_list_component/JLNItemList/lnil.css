@@ -1,0 +1,56 @@
+.lnil {
+  background-color: rgb(205,205,205);
+  border-color: rgb(50,50,50);
+  min-height: 40px;
+  padding: 5px 20px 5px 10px;
+  width: 600px;
+}
+.lnil-input-ready {
+  background-color: rgba(255,255,255,0.5);
+  border-color: rgb(50,50,50);
+  min-height: 40px;
+  padding: 5px 5px 5px 5px;
+  width: 600px;
+}
+.lnil-input-ready-input {
+  border: 0px;
+  padding: 5px 5px 5px 5px;
+  min-width: 150px;
+}
+.lnil-item{
+  border: 2px solid rgb(200,200,200);
+  background-color: rgb(255,255,255);
+  padding: 2px 10px 2px 10px;
+  border-radius: 10px;
+  display: inline-block;
+  cursor: pointer;
+}
+.lnil-item-remover{
+  margin-left: 4px;
+  float: right;
+  font-size: 21px;
+  font-weight: bold;
+  line-height: 1;
+  color: rgb(200,200,200);
+  cursor: pointer;
+  -webkit-appearance: none;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.lnil-item-remover:hover{
+	color: rgb(150,150,150);
+}
+.lnil-click-handler{
+	cursor: pointer;
+	height: 30px;
+	/*background-color: rgb(100,200,100);*/
+}
+.lnil-input-new-item{
+  border: 2px solid rgb(150,150,150);
+  background-color: rgb(225,225,225);
+  padding: 2px 10px 2px 10px;
+  border-radius: 5px;
+  /*width: 200px;*/
+  display: inline-block;
+}
