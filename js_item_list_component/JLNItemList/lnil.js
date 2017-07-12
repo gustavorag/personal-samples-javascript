@@ -1,7 +1,5 @@
 (function init(){
 	
-
-
 	var lnItemsListApi = {
 		
 		"NLItemsList": function(config){
@@ -20,7 +18,7 @@
 			var ID_LIST_ITEM = "-item-id-";
 			var ID_REMOVE_POSFIX = "-remove";
 
-			var inputListSize = 600; //Default value
+			var inputListSize = 0; //Default value
 			var paddingFix = 10;
 			var inputMinSize = 150;
 			var hiddenInputMinSize = 20;
@@ -103,9 +101,13 @@
 					var itemsListElement = $('#'+itemsListElementId);
 					if(lnilConfig.options && lnilConfig.options.width){
 						inputListSize = lnilConfig.options.width;
+						itemsListElement.css('width', inputListSize);
+					}else{
+
+						inputListSize = itemsListElement.width();
+						console.log("List size: "+inputListSize)
 					}
 
-					itemsListElement.css('width', inputListSize);
 					if(lnilConfig.options.permanentInput){
 						itemsListElement.addClass(CLASS_LNIL_COMP_PERMANENT_INPUT);
 					}else{
@@ -156,6 +158,8 @@
 					if(lnilConfig.options.addOnFocusout){
 						var value = inputElement.val();
 						addNewItem('', value);
+					}else if(!lnilConfig.options.permanentInput){
+						inputElement.val('');
 					}
 					if(!lnilConfig.options.permanentInput){
 						hideInput();
@@ -377,16 +381,20 @@
 			var resizeInput = function(inputId){
 
 				var lineSize = 0;
+
+				var itemsListElement = $('#'+itemsListElementId);
+				inputListSize = itemsListElement.width();
+
 				itemsListElement = $('#'+itemsListElementId);
 				
 				itemsListElement.children().each(function(){
 					//Input elements will not be considerated
 					if($(this).prop("id") == ID_INPUT ||
 						$(this).prop("id") == ID_INPUT_EDIT){
-						console.log('Stoping loop')
+						// console.log('Stoping loop')
 						return false;
 					}
-					console.log('Continuing loop')
+					// console.log('Continuing loop')
 					lineSize = lineSize+$(this).outerWidth();
 					if(lineSize > (inputListSize - paddingFix)){
 						lineSize = $(this).outerWidth();
@@ -394,16 +402,19 @@
 				})
 
 				var inputElement = $('#'+inputId);
-				var inputSize = (inputListSize - lineSize - paddingFix);
+				var inputSizePixel = (inputListSize - lineSize - paddingFix);
 
 				var minSize = lnilConfig.options.permanentInput ? inputMinSize:hiddenInputMinSize;
 
-				if(inputSize < minSize){
-					inputSize = (inputListSize - paddingFix);
+				if(inputSizePixel < minSize){
+					inputSizePixel = (inputListSize - paddingFix);
 				}
-				inputElement.css('width',inputSize);
 
-				console.log('lineSize: '+lineSize+' -- Inputsize: '+inputSize)
+				var inputSizePercent = ((inputSizePixel*100)/inputListSize);
+
+				inputElement.css('width',inputSizePercent+'%');
+
+				console.log('lineSize: '+lineSize+' -- Inputsize: '+inputSizePercent)
 			}
 
 			var isStringEmpty = function(str){
