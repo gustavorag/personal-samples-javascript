@@ -120,10 +120,10 @@
 						lnilConfig.items.forEach(function(item,index){
 							if(item){
 								if(typeof item === "object"){
-									addNewItem(item.key, item.value)
+									addPreviousItem(item.key, item.value)
 								}
 								if(typeof item === "string"){
-									addNewItem('', item)
+									addPreviousItem('', item)
 								}	
 							}
 						})
@@ -174,7 +174,9 @@
 					addNewItem('', value);
 					if(!lnilConfig.options.permanentInput){
 						hideInput();
+						inputElement.blur();
 					}
+					inputElement.val('');
 
 				    return false;
 				  }
@@ -207,12 +209,7 @@
 					removeItem(lnilItem.htmlId);
 				})
 				
-				if(eventHandlers.additem && !previous){
-					eventHandlers.additem(lnilItem.item)
-				}
-				if(eventHandlers.listchange && !previous){
-					eventHandlers.listchange(getItems())
-				}
+				
 
 			}
 
@@ -244,7 +241,37 @@
 					$('#'+ID_INPUT).val('');
 					addItem(lnilItem, ID_INPUT);
 					resizeInput(ID_INPUT);
+
+					if(eventHandlers.additem){
+						eventHandlers.additem(lnilItem.item)
+					}
+					if(eventHandlers.listchange){
+						eventHandlers.listchange(getItems())
+					}
 				}
+			}
+
+			var addPreviousItem = function(key,value){
+				
+				if(isStringEmpty(key) && lnilConfig.keyGenerator){
+					key = lnilConfig.keyGenerator(value);
+				}
+				var newItemId = ID_LIST_ITEM+(++itemsHtmlIdCounter);
+
+				var lnilItem = {
+					htmlId:newItemId,
+					item:{
+						key:key,
+						value:value
+					},
+				}
+
+				itemsList.push(lnilItem);
+
+				$('#'+ID_INPUT).val('');
+				addItem(lnilItem, ID_INPUT);
+				resizeInput(ID_INPUT);
+
 			}
 
 			var handleEditItemEvent = function(htmlId){
